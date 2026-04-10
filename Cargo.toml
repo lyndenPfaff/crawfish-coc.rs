@@ -11,3 +11,4 @@ keywords = [ "Clash of Clans", "coc", "API Client", "API Wrapper", "Supercell" ]
 categories = [ "api-bindings", "asynchronous", "web-programming::http-client" ]
 
 [dependencies]
+serde = { version = "1.0.228", features = [ "derive" ] }

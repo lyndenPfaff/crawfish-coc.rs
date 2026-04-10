@@ -155,7 +155,6 @@ pub struct WarStatus {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct ClanMember {
-    pub league: League,
     pub league_tier: LeagueTier,
     pub builder_base_league: BuilderBaseLeague,
     pub tag: String,
@@ -450,7 +449,6 @@ pub struct PlayerRankingClan {
 #[serde(rename_all="camelCase")]
 pub struct PlayerRanking {
     pub clan: PlayerRankingClan,
-    pub league: League,
     pub league_tier: LeagueTier,
     pub attack_wins: i64,
     pub defense_wins: i64,
@@ -550,7 +548,6 @@ pub struct ClanRanking {
 #[serde(rename_all="camelCase")]
 pub struct Player {
     pub clan: PlayerClan,
-    pub league: League,
     pub league_tier: LeagueTier,
     pub builder_base_league: BuilderBaseLeague,
     /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
@@ -560,8 +557,8 @@ pub struct Player {
     pub attack_wins: i64,
     pub defense_wins: i64,
     pub town_hall_level: i64,
-    pub town_hall_weapon_level: i64,
-    pub legend_statistics: PlayerLegendStatistics,
+    /// None if player has not been to legend league
+    pub legend_statistics: Option<PlayerLegendStatistics>,
     pub troops: Vec<PlayerItemLevel>,
     pub heroes: Vec<PlayerItemLevel>,
     pub hero_equipment: Vec<PlayerItemLevel>,
@@ -580,8 +577,10 @@ pub struct Player {
     pub war_stars: i64,
     pub achievements: Vec<PlayerAchievementProgress>,
     pub clan_capital_contributions: i64,
-    pub player_house: PlayerHouse,
-    pub current_league_group_tag: String,
+    /// None if player does not have a house
+    pub player_house: Option<PlayerHouse>,
+    /// None if player is not in a league group
+    pub current_league_group_tag: Option<String>,
     pub current_league_season_id: i128,
     pub previous_league_group_tag: String,
     pub previous_league_season_id: i128,
@@ -595,7 +594,8 @@ pub struct PlayerAchievementProgress {
     pub name: String,
     pub target: i64,
     pub info: String,
-    pub completion_info: String,
+    /// Null for certain acheivements
+    pub completion_info: Option<String>,
     /// Enum: [ HOME_VILLAGE, BUILDER_BASE, CLAN_CAPITAL ]
     pub village: String,
 }
@@ -608,8 +608,10 @@ pub struct PlayerItemLevel {
     pub max_level: i64,
     /// Enum: [ HOME_VILLAGE, BUILDER_BASE, CLAN_CAPITAL ]
     pub village: String,
+    #[serde(default)]
     pub super_troop_is_active: bool,
-    pub equipment: Vec<PlayerItemLevel>,
+    /// None if the `PlayerItemLevel` does not represent a hero
+    pub equipment: Option<Vec<PlayerItemLevel>>,
 }
 
 #[derive(Debug, Deserialize)]

@@ -120,11 +120,11 @@ pub struct ClanCapitalRaidSeasonAttackLogEntry {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Location {
-    pub localized_name: String,
+    pub localized_name: Option<String>,
     pub id: i64,
     pub name: String,
     pub is_country: bool,
-    pub country_code: String,
+    pub country_code: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -169,7 +169,7 @@ pub struct ClanMember {
     pub donations_received: i64,
     pub trophies: i64,
     pub builder_base_trophies: i64,
-    pub player_house: PlayerHouse,
+    pub player_house: Option<PlayerHouse>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -285,10 +285,13 @@ pub struct Clan {
     pub war_league: WarLeague,
     pub capital_league: CapitalLeague,
     pub tag: String,
-    pub war_ties: i64,
-    pub war_losses: i64,
+    /// None if war log is private
+    pub war_ties: Option<i64>,
+    /// None if war log is private
+    pub war_losses: Option<i64>,
     pub clan_points: i64,
-    pub chat_language: Language,
+    /// None if language is 'Other'
+    pub chat_language: Option<Language>,
     pub is_family_friendly: bool,
     pub is_war_log_public: bool,
     /// Enum: [ UNKNOWN, ALWAYS, MORE_THAN_ONCE_PER_WEEK, ONCE_PER_WEEK, LESS_THAN_ONCE_PER_WEEK, NEVER, ANY ]
@@ -303,7 +306,7 @@ pub struct Clan {
     pub required_townhall_level: i64,
     pub labels: Vec<Label>,
     pub name: String,
-    pub location: Location,
+    pub location: Option<Location>,
     /// Enum: [ OPEN, INVITE_ONLY, CLOSED ]
     pub r#type: String,
     pub members: i64,
@@ -315,8 +318,10 @@ pub struct Clan {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct ClanCapital {
-    pub capital_hall_level: i64,
-    pub districts: Vec<ClanDistrictData>,
+    /// None if clan does not have a capital hall
+    pub capital_hall_level: Option<i64>,
+    /// None if clan does not have a capital hall
+    pub districts: Option<Vec<ClanDistrictData>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -647,7 +652,8 @@ pub struct PlayerClan {
 pub struct ClientError {
     pub reason: String,
     pub message: String,
-    pub r#type: String,
+    /// None for some responses? Further testing required
+    pub r#type: Option<String>,
 }
 
 /* --- ------- --- */

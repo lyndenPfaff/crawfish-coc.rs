@@ -6,7 +6,6 @@ edition = "2024"
 description = "Clash of Clans Rust Api Wraper"
 readme = "./readme.md"
 license = "GPL-3.0-or-later"
-license-file = "./license.md"
 keywords = [ "Clash of Clans", "coc", "API Client", "API Wrapper", "Supercell" ]
 categories = [ "api-bindings", "asynchronous", "web-programming::http-client" ]
 

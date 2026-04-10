@@ -2,6 +2,7 @@
 
 use reqwest::StatusCode;
 use reqwest::header::AUTHORIZATION;
+use serde::Deserialize;
 use serde::de::DeserializeOwned;
 
 use crate::model::*;
@@ -66,11 +67,9 @@ impl Client {
     }
 
     pub async fn get_clan_members(&self, tag: &str) -> Result<Vec<ClanMember>, Error> {
-        self.get(&format!("https://api.clashofclans.com/v1/clans/{tag}/members/")).await
-    }
-
-    pub async fn get_capital_raid_seasons(&self, tag: &str) -> Result<Vec<ClanCapitalRaidSeason>, Error> {
-        self.get(&format!("https://api.clashofclans.com/v1/clans/{tag}/capitalraidseasons/")).await
+        #[derive(Deserialize)]
+        struct W { items: Vec<ClanMember> }
+        Ok(self.get::<W>(&format!("https://api.clashofclans.com/v1/clans/{tag}/members/")).await?.items)
     }
 
 
@@ -80,11 +79,15 @@ impl Client {
     }
 
     pub async fn get_player_battle_log(&self, tag: &str) -> Result<Vec<BattleLogEntry>, Error> {
-        self.get(&format!("https://api.clashofclans.com/v1/players/{tag}/battlelog/")).await
+        #[derive(Deserialize)]
+        struct W { items: Vec<BattleLogEntry> }
+        Ok(self.get::<W>(&format!("https://api.clashofclans.com/v1/players/{tag}/battlelog/")).await?.items)
     }
 
     pub async fn get_player_league_history(&self, tag: &str) -> Result<Vec<LeagueSeasonResult>, Error> {
-        self.get(&format!("https://api.clashofclans.com/v1/players/{tag}/leaguehistory/")).await
+        #[derive(Deserialize)]
+        struct W { items: Vec<LeagueSeasonResult> }
+        Ok(self.get::<W>(&format!("https://api.clashofclans.com/v1/players/{tag}/leaguehistory/")).await?.items)
     }
 
 
@@ -93,14 +96,18 @@ impl Client {
         self.get(&format!("https://api.clashofclans.com/v1/leaguetiers/{id}/")).await
     }
 
-    pub async fn league_tiers(&self) -> Result<Vec<CapitalLeague>, Error> {
-        self.get("https://api.clashofclans.com/v1/leaguetiers/").await
+    pub async fn league_tiers(&self) -> Result<Vec<LeagueTier>, Error> {
+        #[derive(Deserialize)]
+        struct W { items: Vec<LeagueTier> }
+        Ok(self.get::<W>("https://api.clashofclans.com/v1/leaguetiers/").await?.items)
     }
 
 
 
     pub async fn capital_leagues(&self) -> Result<Vec<CapitalLeague>, Error> {
-        self.get("https://api.clashofclans.com/v1/capitalleagues/").await
+        #[derive(Deserialize)]
+        struct W { items: Vec<CapitalLeague> }
+        Ok(self.get::<W>("https://api.clashofclans.com/v1/capitalleagues/").await?.items)
     }
 
     pub async fn get_capital_league(&self, id: i64) -> Result<CapitalLeague, Error> {
@@ -114,19 +121,20 @@ impl Client {
     }
 
     pub async fn builder_base_leagues(&self) -> Result<Vec<BuilderBaseLeague>, Error> {
-        // /builderbaseleagues
-        self.get("https://api.clashofclans.com/v1/builderbaseleagues/").await
+        #[derive(Deserialize)]
+        struct W { items: Vec<BuilderBaseLeague> }
+        Ok(self.get::<W>("https://api.clashofclans.com/v1/builderbaseleagues/").await?.items)
     }
 
 
 
     pub async fn war_leagues(&self) -> Result<Vec<WarLeague>, Error> {
-        // /warleagues
-        self.get("https://api.clashofclans.com/v1/warleagues/").await
+        #[derive(Deserialize)]
+        struct W { items: Vec<WarLeague> }
+        Ok(self.get::<W>("https://api.clashofclans.com/v1/warleagues/").await?.items)
     }
 
-    pub async fn get_war_league(&self, id: i64) -> Result<Vec<WarLeague>, Error> {
-        // /warleagues/{id}
+    pub async fn get_war_league(&self, id: i64) -> Result<WarLeague, Error> {
         self.get(&format!("https://api.clashofclans.com/v1/warleagues/{id}")).await
     }
 }

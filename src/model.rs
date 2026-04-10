@@ -156,7 +156,7 @@ pub struct WarStatus {
 #[serde(rename_all="camelCase")]
 pub struct ClanMember {
     pub league_tier: LeagueTier,
-    pub builder_base_league: BuilderBaseLeague,
+    pub builder_base_league: Option<BuilderBaseLeague>,
     pub tag: String,
     pub name: String,
     /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
@@ -433,7 +433,7 @@ pub struct ClanBuilderBaseRanking {
 #[serde(rename_all="camelCase")]
 pub struct PlayerBuilderBaseRanking {
     pub clan: PlayerRankingClan,
-    pub builder_base_league: BuilderBaseLeague,
+    pub builder_base_league: Option<BuilderBaseLeague>,
     pub tag: String,
     pub name: String,
     pub exp_level: i64,
@@ -554,7 +554,7 @@ pub struct ClanRanking {
 pub struct Player {
     pub clan: PlayerClan,
     pub league_tier: LeagueTier,
-    pub builder_base_league: BuilderBaseLeague,
+    pub builder_base_league: Option<BuilderBaseLeague>,
     /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
     pub role: String,
     /// Enum: [ OUT, IN ]
@@ -576,7 +576,7 @@ pub struct Player {
     pub best_trophies: i64,
     pub donations: i64,
     pub donations_received: i64,
-    pub builder_hall_level: i64,
+    pub builder_hall_level: Option<i64>,
     pub builder_base_trophies: i64,
     pub best_builder_base_trophies: i64,
     pub war_stars: i64,
@@ -586,8 +586,10 @@ pub struct Player {
     pub player_house: Option<PlayerHouse>,
     /// None if player is not in a league group
     pub current_league_group_tag: Option<String>,
+    /// None if player is not in a league season
     pub current_league_season_id: i128,
-    pub previous_league_group_tag: String,
+    /// None if there was no previous league group
+    pub previous_league_group_tag: Option<String>,
     pub previous_league_season_id: i128,
 }
 
@@ -622,20 +624,20 @@ pub struct PlayerItemLevel {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct PlayerLegendStatistics {
-    pub best_builder_base_season: LegendLeagueTournamentSeasonResult,
+    pub best_builder_base_season: Option<LegendLeagueTournamentSeasonResult>,
     pub current_season: LegendLeagueTournamentSeasonResult,
     pub legend_trophies: i64,
-    pub best_season: LegendLeagueTournamentSeasonResult,
-    pub previous_season: LegendLeagueTournamentSeasonResult,
-    pub previous_builder_base_season: LegendLeagueTournamentSeasonResult,
+    pub best_season: Option<LegendLeagueTournamentSeasonResult>,
+    pub previous_season: Option<LegendLeagueTournamentSeasonResult>,
+    pub previous_builder_base_season: Option<LegendLeagueTournamentSeasonResult>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct LegendLeagueTournamentSeasonResult {
     pub trophies: i64,
-    pub id: String,
-    pub rank: i64,
+    pub id: Option<String>,
+    pub rank: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -651,7 +653,7 @@ pub struct PlayerClan {
 #[serde(rename_all="camelCase")]
 pub struct ClientError {
     pub reason: String,
-    pub message: String,
+    pub message: Option<String>,
     /// None for some responses? Further testing required
     pub r#type: Option<String>,
 }

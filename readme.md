@@ -10,5 +10,5 @@ Account from <https://developer.clashofclans.com/>, and an API token valid
 for the IP address of the machine running the library.
 
 ## License
-This project is licensed under the GNU GPL License - see the license.md
+This project is licensed under the MIT License - see the license.md
 file for details

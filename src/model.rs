@@ -272,7 +272,7 @@ pub struct VerifyTokenRequest {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
-pub struct VerifyTokenResponce {
+pub struct VerifyTokenResponse {
     pub tag: String,
     pub token: String,
     pub status: String,

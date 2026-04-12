@@ -542,13 +542,16 @@ pub struct ClanRanking {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct Player {
-    pub clan: PlayerClan,
+    /// None if player is not in a clan
+    pub clan: Option<PlayerClan>,
     pub league_tier: LeagueTier,
     pub builder_base_league: Option<BuilderBaseLeague>,
     /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
-    pub role: String,
+    /// None if player is not in a clan
+    pub role: Option<String>,
     /// Enum: [ OUT, IN ]
-    pub war_preference: String,
+    /// None if player is not in a clan
+    pub war_preference: Option<String>,
     pub attack_wins: i64,
     pub defense_wins: i64,
     pub town_hall_level: i64,

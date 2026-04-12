@@ -8,6 +8,7 @@ readme = "./readme.md"
 license = "MIT"
 keywords = [ "Clash of Clans", "coc", "API Client", "API Wrapper", "Supercell" ]
 categories = [ "api-bindings", "asynchronous", "web-programming::http-client" ]
+repository = "https://github.com/lyndenPfaff/crawfish-coc"
 
 [dependencies]
 reqwest = "0.13.2"

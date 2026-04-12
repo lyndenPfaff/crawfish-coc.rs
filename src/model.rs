@@ -162,6 +162,8 @@ pub struct ClanMember {
     /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
     pub role: String,
     pub town_hall_level: i64,
+    /// None if town hall does not have a weapon (11 and below)
+    pub town_hall_weapon_level: Option<i64>,
     pub exp_level: i64,
     pub clan_rank: i64,
     pub previous_clan_rank: i64,
@@ -367,26 +369,14 @@ pub struct ClanWar {
 #[serde(rename_all="camelCase")]
 pub struct WarClan {
     pub destruction_percentage: f64,
-    pub tag: String,
-    pub name: String,
+    pub tag: Option<String>,
+    pub name: Option<String>,
     pub badge_urls: HashMap<String, String>,
     pub clan_level: i64,
-    pub attacks: i64,
+    pub attacks: Option<i64>,
     pub stars: i64,
-    pub exp_earned: i64,
-    pub members: Vec<ClanWarMember>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all="camelCase")]
-pub struct ClanWarMember {
-    pub tag: String,
-    pub name: String,
-    pub map_position: i64,
-    pub townhall_level: i64,
-    pub opponent_attacks: i64,
-    pub best_opponent_attack: ClanWarAttack,
-    pub attacks: Vec<ClanWarAttack>,
+    /// `None` for the opponent clan
+    pub exp_earned: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -562,6 +552,8 @@ pub struct Player {
     pub attack_wins: i64,
     pub defense_wins: i64,
     pub town_hall_level: i64,
+    /// None if town hall does not have a weapon (11 and below)
+    pub town_hall_weapon_level: Option<i64>,
     /// None if player has not been to legend league
     pub legend_statistics: Option<PlayerLegendStatistics>,
     pub troops: Vec<PlayerItemLevel>,
@@ -656,6 +648,20 @@ pub struct ClientError {
     pub message: Option<String>,
     /// None for some responses? Further testing required
     pub r#type: Option<String>,
+}
+
+
+
+#[derive(Debug, Deserialize)]
+pub (crate) struct SearchResponse<T> {
+    pub (crate) items: Vec<T>,
+    pub (crate) paging: PagingCursors,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PagingCursors {
+    pub after: Option<String>,
+    pub before: Option<String>,
 }
 
 /* --- ------- --- */

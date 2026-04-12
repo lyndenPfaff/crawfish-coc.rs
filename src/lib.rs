@@ -1,5 +1,13 @@
+/* --- MODULES --- */
+
 pub mod client;
 pub mod model;
+
+/* --- ------- --- */
+
+
+
+/* --- ENUMS --- */
 
 #[derive(Debug)]
 pub enum Error {
@@ -7,3 +15,5 @@ pub enum Error {
     ParseError(serde_json::Error),
     ClientError(crate::model::ClientError),
 }
+
+/* --- ----- --- */

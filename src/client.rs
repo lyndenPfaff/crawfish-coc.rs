@@ -1,3 +1,11 @@
+/* --- MODULES --- */
+
+mod builder;
+
+/* --- ------- --- */
+
+
+
 /* --- IMPORTS --- */
 
 use reqwest::StatusCode;
@@ -5,6 +13,7 @@ use reqwest::header::AUTHORIZATION;
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
 
+use crate::client::builder::*;
 use crate::model::*;
 use crate::Error;
 
@@ -30,7 +39,7 @@ impl Client {
         Client { token: token.into(), client: reqwest::Client::new() }
     }
 
-    async fn get<T: DeserializeOwned>(&self, url: &str) -> Result<T, Error> {
+    pub (crate) async fn get<T: DeserializeOwned>(&self, url: &str) -> Result<T, Error> {
         let response = self.client.get(url)
             .header(AUTHORIZATION, format!("Bearer {}", self.token))
             .send().await.map_err(Error::HTTPError)?;
@@ -64,12 +73,6 @@ impl Client {
 
     pub async fn get_clan(&self, tag: &str) -> Result<Clan, Error> {
         self.get(&format!("https://api.clashofclans.com/v1/clans/{tag}/")).await
-    }
-
-    pub async fn get_clan_members(&self, tag: &str) -> Result<Vec<ClanMember>, Error> {
-        #[derive(Deserialize)]
-        struct W { items: Vec<ClanMember> }
-        Ok(self.get::<W>(&format!("https://api.clashofclans.com/v1/clans/{tag}/members/")).await?.items)
     }
 
 
@@ -135,8 +138,63 @@ impl Client {
     }
 
     pub async fn get_war_league(&self, id: i64) -> Result<WarLeague, Error> {
-        self.get(&format!("https://api.clashofclans.com/v1/warleagues/{id}")).await
+        self.get(&format!("https://api.clashofclans.com/v1/warleagues/{id}/")).await
     }
+
+    pub async fn get_location(&self, id: i64) -> Result<Location, Error> {
+        self.get(&format!("https://api.clashofclans.com/v1/locations/{id}/")).await
+    }
+
+    pub async fn get_current_gold_pass_season(&self) -> Result<GoldPassSeason, Error> {
+        self.get("https://api.clashofclans.com/v1/goldpass/seasons/current/").await
+    }
+
+
+
+    pub fn search_clan_war_log<'a>(&'a self, clan_tag: impl Into<String>) -> WarLogSearch<'a> {
+        WarLogSearch::new(self, clan_tag.into())
+    }
+
+    pub fn search_clans<'a>(&'a self) -> ClanSearch<'a> {
+        ClanSearch::new(self)
+    }
+
+    pub fn search_clan_members<'a>(&'a self, clan_tag: impl Into<String>) -> ClanMemberSearch<'a> {
+        ClanMemberSearch::new(self, clan_tag.into())
+    }
+
+    pub fn search_capital_raid_seasons<'a>(&'a self, clan_tag: impl Into<String>) -> CapitalRaidSeasonSearch<'a> {
+        CapitalRaidSeasonSearch::new(self, clan_tag.into())
+    }
+
+    pub fn search_player_battlelog<'a>(&'a self, tag: impl Into<String>) -> PlayerBattleLogSearch<'a> {
+        PlayerBattleLogSearch::new(self, tag.into())
+    }
+
+    pub fn search_location_clan_rankings<'a>(&'a self, location_id: i64) -> LocationalClanRankingsSearch<'a> {
+        LocationalClanRankingsSearch::new(self, location_id)
+    }
+
+    pub fn search_location_player_rankings<'a>(&'a self, location_id: i64) -> LocationalPlayerRankingsSearch<'a> {
+        LocationalPlayerRankingsSearch::new(self, location_id)
+    }
+
+    pub fn search_location_player_builder_rankings<'a>(&'a self, location_id: i64) -> LocationalPlayerBuilderRankingsSearch<'a> {
+        LocationalPlayerBuilderRankingsSearch::new(self, location_id)
+    }
+
+    pub fn search_location_clan_builder_rankings<'a>(&'a self, location_id: i64) -> LocationalClanBuilderRankingsSearch<'a> {
+        LocationalClanBuilderRankingsSearch::new(self, location_id)
+    }
+
+    pub fn search_locations<'a>(&'a self) -> LocationsSearch<'a> {
+        LocationsSearch::new(self)
+    }
+
+    pub fn search_location_clan_capital_rankings<'a>(&'a self, location_id: i64) -> LocationalClanCapitalRankingsSearch<'a> {
+        LocationalClanCapitalRankingsSearch::new(self, location_id)
+    }
+
 }
 
 /* --- ----- --- */

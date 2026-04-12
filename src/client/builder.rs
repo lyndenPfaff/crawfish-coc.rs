@@ -1,7 +1,7 @@
 /* --- IMPORTS --- */
 
 use crate::client::Client;
-use crate::model::*;
+use crate::model::{ ClanWarLogEntry, PagingCursors, SearchResponse, Clan, ClanMember, ClanCapitalRaidSeason, BattleLogEntry, ClanRanking, PlayerRanking, PlayerBuilderBaseRanking, ClanBuilderBaseRanking, Location, ClanCapitalRanking };
 use crate::Error;
 
 /* --- ------- --- */
@@ -21,7 +21,7 @@ pub struct WarLogSearch<'a> {
 pub struct ClanSearch<'a> {
     client: &'a Client,
     name: Option<String>,
-    /// Enum: [ UNKNOWN, ALWAYS, MORE_THAN_ONCE_PER_WEEK, ONCE_PER_WEEK, LESS_THAN_ONCE_PER_WEEK, NEVER, ANY ]
+    /// Enum: [ `UNKNOWN`, `ALWAYS`, `MORE_THAN_ONCE_PER_WEEK`, `ONCE_PER_WEEK`, `LESS_THAN_ONCE_PER_WEEK`, `NEVER`, `ANY` ]
     war_frequency: Option<String>,
     location_id: Option<i64>,
     min_members: Option<i64>,
@@ -112,15 +112,16 @@ pub struct LocationalClanCapitalRankingsSearch<'a> {
 /* --- IMPLS --- */
 
 impl WarLogSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, clan_tag: String) -> WarLogSearch<'a> {
+    pub (crate) fn new(client: &Client, clan_tag: String) -> WarLogSearch<'_> {
         WarLogSearch { client, clan_tag, limit: None, after: None, before: None }
     }
 
     pub async fn send(self) -> Result<(Vec<ClanWarLogEntry>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/clans/{}/warlog", self.clan_tag);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/clans/{}/warlog{}{}{}", self.clan_tag,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -143,7 +144,7 @@ impl WarLogSearch<'_> {
 }
 
 impl ClanSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client) -> ClanSearch<'a> {
+    pub (crate) fn new(client: &Client) -> ClanSearch<'_> {
         ClanSearch {
             client, name: None, war_frequency: None,
             location_id: None, min_members: None, max_members: None,
@@ -153,24 +154,26 @@ impl ClanSearch<'_> {
     }
 
     pub async fn send(self) -> Result<(Vec<Clan>, PagingCursors), Error> {
-        let mut url = String::from("https://api.clashofclans.com/v1/clans");
-        if let Some(name) = self.name { url.push_str(&format!("?name={name}")) }
-        if let Some(wf) = self.war_frequency { url.push_str(&format!("?warFrequency={wf}")) }
-        if let Some(li) = self.location_id { url.push_str(&format!("?locationId={li}")) }
-        if let Some(mm) = self.min_members { url.push_str(&format!("?minmembers={mm}")) }
-        if let Some(mm) = self.max_members { url.push_str(&format!("?maxMembers={mm}")) }
-        if let Some(mcp) = self.min_clan_points { url.push_str(&format!("?minClanPoints={mcp}")) }
-        if let Some(mcl) = self.min_clan_level { url.push_str(&format!("?minClanLevel={mcl}")) }
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
-        if !self.label_ids.is_empty() {
-            url.push_str(&format!("?labelIds={}",
-            self.label_ids.into_iter()
-                .map(|l| format!("{l}")).collect::<Vec<_>>()
-                .join(",")
-            ));
-        }
+
+        let url = format!("https://api.clashofclans.com/v1/clans{}{}{}{}{}{}{}{}{}{}{}",
+            if let Some(name) = self.name { format!("?name={name}") } else {String::new()},
+            if let Some(war_frequency) = self.war_frequency { format!("?warFrequency={war_frequency}") } else {String::new()},
+            if let Some(location_id) = self.location_id { format!("?locationId={location_id}") } else {String::new()},
+            if let Some(min_members) = self.min_members { format!("?locationId={min_members}") } else {String::new()},
+            if let Some(max_members) = self.max_members { format!("?locationId={max_members}") } else {String::new()},
+            if let Some(min_clan_points) = self.min_clan_points { format!("?locationId={min_clan_points}") } else {String::new()},
+            if let Some(min_clan_level) = self.min_clan_level { format!("?locationId={min_clan_level}") } else {String::new()},
+            if let Some(limit) = self.limit { format!("?locationId={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?locationId={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?locationId={before}") } else {String::new()},
+            if self.label_ids.is_empty() { String::new() }
+            else { format!("?locationId={}",
+                self.label_ids.into_iter()
+                    .map(|l| format!("{l}"))
+                    .collect::<Vec<_>>()
+                    .join(","))
+            },
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -223,15 +226,16 @@ impl ClanSearch<'_> {
 }
 
 impl ClanMemberSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, clan_tag: String) -> ClanMemberSearch<'a> {
+    pub (crate) fn new(client: &Client, clan_tag: String) -> ClanMemberSearch<'_> {
         ClanMemberSearch { client, clan_tag, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<ClanMember>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/clans/{}/members", self.clan_tag);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/clans/{}/members{}{}{}", self.clan_tag,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -254,15 +258,16 @@ impl ClanMemberSearch<'_> {
 }
 
 impl CapitalRaidSeasonSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, clan_tag: String) -> CapitalRaidSeasonSearch<'a> {
+    pub (crate) fn new(client: &Client, clan_tag: String) -> CapitalRaidSeasonSearch<'_> {
         CapitalRaidSeasonSearch { client, clan_tag, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<ClanCapitalRaidSeason>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/clans/{}/capitalraidseasons", self.clan_tag);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/clans/{}/capitalraidseasons{}{}{}", self.clan_tag,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -285,15 +290,16 @@ impl CapitalRaidSeasonSearch<'_> {
 }
 
 impl PlayerBattleLogSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, tag: String) -> PlayerBattleLogSearch<'a> {
+    pub (crate) fn new(client: &Client, tag: String) -> PlayerBattleLogSearch<'_> {
         PlayerBattleLogSearch { client, tag, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<BattleLogEntry>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/clans/{}/capitalraidseasons", self.tag);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/clans/{}/battlelog{}{}{}", self.tag,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -316,15 +322,16 @@ impl PlayerBattleLogSearch<'_> {
 }
 
 impl LocationalClanRankingsSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, location_id: i64) -> LocationalClanRankingsSearch<'a> {
+    pub (crate) fn new(client: &Client, location_id: i64) -> LocationalClanRankingsSearch<'_> {
         LocationalClanRankingsSearch { client, location_id, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<ClanRanking>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/clans/", self.location_id);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/clans{}{}{}", self.location_id,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -347,15 +354,17 @@ impl LocationalClanRankingsSearch<'_> {
 }
 
 impl LocationalPlayerRankingsSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, location_id: i64) -> LocationalPlayerRankingsSearch<'a> {
+    pub (crate) fn new(client: &Client, location_id: i64) -> LocationalPlayerRankingsSearch<'_> {
         LocationalPlayerRankingsSearch { client, location_id, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<PlayerRanking>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/players/", self.location_id);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/players{}{}{}", self.location_id,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
+        
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -378,15 +387,16 @@ impl LocationalPlayerRankingsSearch<'_> {
 }
 
 impl LocationalPlayerBuilderRankingsSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, location_id: i64) -> LocationalPlayerBuilderRankingsSearch<'a> {
+    pub (crate) fn new(client: &Client, location_id: i64) -> LocationalPlayerBuilderRankingsSearch<'_> {
         LocationalPlayerBuilderRankingsSearch { client, location_id, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<PlayerBuilderBaseRanking>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/players-builder-base/", self.location_id);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/players-builder-base{}{}{}", self.location_id,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -409,15 +419,16 @@ impl LocationalPlayerBuilderRankingsSearch<'_> {
 }
 
 impl LocationalClanBuilderRankingsSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, location_id: i64) -> LocationalClanBuilderRankingsSearch<'a> {
+    pub (crate) fn new(client: &Client, location_id: i64) -> LocationalClanBuilderRankingsSearch<'_> {
         LocationalClanBuilderRankingsSearch { client, location_id, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<ClanBuilderBaseRanking>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/clans-builder-base/", self.location_id);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/clans-builder-base{}{}{}", self.location_id,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -440,15 +451,16 @@ impl LocationalClanBuilderRankingsSearch<'_> {
 }
 
 impl LocationsSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client) -> LocationsSearch<'a> {
+    pub (crate) fn new(client: &Client) -> LocationsSearch<'_> {
         LocationsSearch { client, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<Location>, PagingCursors), Error> {
-        let mut url = String::from("https://api.clashofclans.com/v1/locations/");
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/locations{}{}{}",
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))
@@ -471,15 +483,16 @@ impl LocationsSearch<'_> {
 }
 
 impl LocationalClanCapitalRankingsSearch<'_> {
-    pub (crate) fn new<'a>(client: &'a Client, location_id: i64) -> LocationalClanCapitalRankingsSearch<'a> {
+    pub (crate) fn new(client: &Client, location_id: i64) -> LocationalClanCapitalRankingsSearch<'_> {
         LocationalClanCapitalRankingsSearch { client, location_id, limit: None, before: None, after: None }
     }
 
     pub async fn send(self) -> Result<(Vec<ClanCapitalRanking>, PagingCursors), Error> {
-        let mut url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/clans-builder-base/", self.location_id);
-        if let Some(limit) = self.limit { url.push_str(&format!("?limit={limit}")) }
-        if let Some(after) = self.after { url.push_str(&format!("?after={after}")) }
-        if let Some(before) = self.before { url.push_str(&format!("?before={before}")) }
+        let url = format!("https://api.clashofclans.com/v1/locations/{}/rankings/clans{}{}{}", self.location_id,
+            if let Some(limit) = self.limit { format!("?limit={limit}") } else {String::new()},
+            if let Some(after) = self.after { format!("?after={after}") } else {String::new()},
+            if let Some(before) = self.before { format!("?before={before}") } else {String::new()},
+        );
 
         let res: SearchResponse<_> = self.client.get(&url).await?;
         Ok((res.items, res.paging))

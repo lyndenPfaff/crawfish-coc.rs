@@ -147,7 +147,7 @@ pub struct WarStatus {
     pub status_code: i64,
     pub clan_tag: String,
     pub enemy_clan_tag: String,
-    /// Enum: [ CLAN_NOT_FOUND, ACCESS_DENIED, NOT_IN_WAR, IN_MATCHMAKING, ENTER_WAR, MATCHED, PREPARATION, WAR, IN_WAR, ENDED ]
+    /// Enum: [ `CLAN_NOT_FOUND`, `ACCESS_DENIED`, `NOT_IN_WAR`, `IN_MATCHMAKING`, `ENTER_WAR`, `MATCHED`, `PREPARATION`, `WAR`, `IN_WAR`, `ENDED` ]
     pub war_state: String,
     pub timestamp: String,
 }
@@ -159,7 +159,7 @@ pub struct ClanMember {
     pub builder_base_league: Option<BuilderBaseLeague>,
     pub tag: String,
     pub name: String,
-    /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
+    /// Enum: [ `NOT_MEMBER`, `MEMBER`, `LEADER`, `ADMIN`, `COLEADER` ]
     pub role: String,
     pub town_hall_level: i64,
     /// None if town hall does not have a weapon (11 and below)
@@ -296,7 +296,7 @@ pub struct Clan {
     pub chat_language: Option<Language>,
     pub is_family_friendly: bool,
     pub is_war_log_public: bool,
-    /// Enum: [ UNKNOWN, ALWAYS, MORE_THAN_ONCE_PER_WEEK, ONCE_PER_WEEK, LESS_THAN_ONCE_PER_WEEK, NEVER, ANY ]
+    /// Enum: [ `UNKNOWN`, `ALWAYS`, `MORE_THAN_ONCE_PER_WEEK`, `ONCE_PER_WEEK`, `LESS_THAN_ONCE_PER_WEEK`, `NEVER`, `ANY` ]
     pub war_frequency: String,
     pub war_win_streak: i64,
     pub war_wins: i64,
@@ -309,7 +309,7 @@ pub struct Clan {
     pub labels: Vec<Label>,
     pub name: String,
     pub location: Option<Location>,
-    /// Enum: [ OPEN, INVITE_ONLY, CLOSED ]
+    /// Enum: [ `OPEN`, `INVITE_ONLY`, `CLOSED` ]
     pub r#type: String,
     pub members: i64,
     pub description: String,
@@ -355,11 +355,11 @@ pub struct ClanWar {
     pub clan: WarClan,
     pub team_size: i64,
     pub attacks_per_member: i64,
-    /// Enum [ NONE, HARD_MODE ]
+    /// Enum [ `NONE`, `HARD_MODE` ]
     pub battle_modifier: String,
     pub opponent: WarClan,
     pub start_time: String,
-    /// Enum [ CLAN_NOT_FOUND, ACCESS_DENIED, NOT_IN_WAR, IN_MATCHMAKING, ENTER_WAR, MATCHED, PREPARATION, WAR, IN_WAR, ENDED ]
+    /// Enum [ `CLAN_NOT_FOUND`, `ACCESS_DENIED`, `NOT_IN_WAR`, `IN_MATCHMAKING`, `ENTER_WAR`, `MATCHED`, `PREPARATION`, `WAR`, `IN_WAR`, `ENDED` ]
     pub state: String,
     pub end_time: String,
     pub preparation_start_time: String,
@@ -393,7 +393,7 @@ pub struct ClanWarAttack {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all="camelCase")]
 pub struct BattleLogEntry {
-    /// Enum: [ HOME_VILLAGE, RANKED, LEGEND ]
+    /// Enum: [ `HOME_VILLAGE`, `RANKED`, `LEGEND` ]
     pub battle_type: String,
     pub attack: bool,
     pub army_share_code: String,
@@ -461,11 +461,11 @@ pub struct ClanWarLogEntry {
     pub clan: WarClan,
     pub team_size: i64,
     pub attacks_per_member: i64,
-    /// Enum: [ NONE, HARD_MODE ]
+    /// Enum: [ `NONE`, `HARD_MODE` ]
     pub battle_modifier: String,
     pub opponent: WarClan,
     pub end_time: String,
-    /// Enum: [ LOSE, WIN, TIE ]
+    /// Enum: [ `LOSE`, `WIN`, `TIE` ]
     pub result: String,
 }
 
@@ -494,7 +494,7 @@ pub struct DeepLinkCreationResponse{
 #[serde(rename_all="camelCase")]
 pub struct ClanWarLeagueGroup {
     pub tag: String,
-    /// Enum: [ GROUP_NOT_FOUND, NOT_IN_WAR, PREPARATION, WAR, ENDED ]
+    /// Enum: [ `GROUP_NOT_FOUND`, `NOT_IN_WAR`, `PREPARATION`, `WAR`, `ENDED` ]
     pub state: String,
     pub season: String,
     pub clans: Vec<ClanWarLeagueClan>,
@@ -546,7 +546,7 @@ pub struct Player {
     pub clan: Option<PlayerClan>,
     pub league_tier: LeagueTier,
     pub builder_base_league: Option<BuilderBaseLeague>,
-    /// Enum: [ NOT_MEMBER, MEMBER, LEADER, ADMIN, COLEADER ]
+    /// Enum: [ `NOT_MEMBER`, `MEMBER`, `LEADER`, `ADMIN`, `COLEADER` ]
     /// None if player is not in a clan
     pub role: Option<String>,
     /// Enum: [ OUT, IN ]
@@ -598,7 +598,7 @@ pub struct PlayerAchievementProgress {
     pub info: String,
     /// Null for certain acheivements
     pub completion_info: Option<String>,
-    /// Enum: [ HOME_VILLAGE, BUILDER_BASE, CLAN_CAPITAL ]
+    /// Enum: [ `HOME_VILLAGE`, `BUILDER_BASE`, `CLAN_CAPITAL` ]
     pub village: String,
 }
 
@@ -608,7 +608,7 @@ pub struct PlayerItemLevel {
     pub level: i64,
     pub name: String,
     pub max_level: i64,
-    /// Enum: [ HOME_VILLAGE, BUILDER_BASE, CLAN_CAPITAL ]
+    /// Enum: [ `HOME_VILLAGE`, `BUILDER_BASE`, `CLAN_CAPITAL` ]
     pub village: String,
     #[serde(default)]
     pub super_troop_is_active: bool,
